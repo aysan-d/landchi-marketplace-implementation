@@ -13,3 +13,8 @@ export default defineConfig({
     server: { entry: "server" },
   },
 });
+export default defineConfig({
+  base: './', // این خط بسیار مهم است تا مسیر فایل‌ها درست لود شود
+  plugins: [react()],
+  // ... سایر تنظیمات
+})
