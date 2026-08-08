@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -24,15 +23,15 @@ export function SectionShell({
           <div className="flex items-center gap-3">
             {extra}
             {href && (
-              <Link
-                to={href}
+              <a
+                href={href}
                 className={`flex items-center gap-0.5 text-[11px] ${
                   plum ? "text-primary-foreground/90" : "text-muted-foreground hover:text-primary"
                 }`}
               >
                 مشاهده همه
                 <ChevronLeft className="size-3.5" strokeWidth={1.6} />
-              </Link>
+              </a>
             )}
           </div>
         </div>
