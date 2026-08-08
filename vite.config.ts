@@ -6,4 +6,9 @@ export default defineConfig({
       entry: "server",
     },
   },
+  // این بخش برای استقرار در GitHub Pages حیاتی است
+  base: '/landchi-marketplace-implementation/', 
+  build: {
+    outDir: 'dist',
+  }
 });
