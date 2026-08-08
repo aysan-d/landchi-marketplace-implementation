@@ -206,3 +206,99 @@ export const productsQuery = (filters: ProductFilters = {}) =>
       return { items: (data ?? []) as unknown as Product[], count: count ?? 0 };
     },
   });
+
+export type ProductImage = { id: string; url: string; alt: string | null; display_order: number };
+export type ProductVariant = {
+  id: string;
+  name: string;
+  value: string;
+  price_delta: number;
+  stock: number;
+  hex: string | null;
+};
+export type Review = {
+  id: string;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  author_name: string | null;
+  created_at: string;
+};
+
+export const productQuery = (slug: string) =>
+  queryOptions({
+    queryKey: ["product", slug],
+    queryFn: async (): Promise<Product | null> => {
+      const { data, error } = await supabase
+        .from("products")
+        .select(PRODUCT_COLUMNS)
+        .eq("slug", slug)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (error) throw error;
+      return (data as unknown as Product) ?? null;
+    },
+  });
+
+export const productImagesQuery = (productId: string | undefined) =>
+  queryOptions({
+    queryKey: ["product-images", productId],
+    enabled: !!productId,
+    queryFn: async (): Promise<ProductImage[]> => {
+      if (!productId) return [];
+      const { data, error } = await supabase
+        .from("product_images")
+        .select("id,url,alt,display_order")
+        .eq("product_id", productId)
+        .order("display_order");
+      if (error) throw error;
+      return (data ?? []) as ProductImage[];
+    },
+  });
+
+export const productVariantsQuery = (productId: string | undefined) =>
+  queryOptions({
+    queryKey: ["product-variants", productId],
+    enabled: !!productId,
+    queryFn: async (): Promise<ProductVariant[]> => {
+      if (!productId) return [];
+      const { data, error } = await supabase
+        .from("product_variants")
+        .select("id,name,value,price_delta,stock,hex")
+        .eq("product_id", productId);
+      if (error) throw error;
+      return (data ?? []) as ProductVariant[];
+    },
+  });
+
+export const reviewsQuery = (productId: string | undefined) =>
+  queryOptions({
+    queryKey: ["reviews", productId],
+    enabled: !!productId,
+    queryFn: async (): Promise<Review[]> => {
+      if (!productId) return [];
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("id,rating,title,body,author_name,created_at")
+        .eq("product_id", productId)
+        .eq("is_approved", true)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as Review[];
+    },
+  });
+
+export const productsByIdsQuery = (ids: string[]) =>
+  queryOptions({
+    queryKey: ["products-by-ids", ids],
+    enabled: ids.length > 0,
+    queryFn: async (): Promise<Product[]> => {
+      if (!ids.length) return [];
+      const { data, error } = await supabase
+        .from("products")
+        .select(PRODUCT_COLUMNS)
+        .in("id", ids);
+      if (error) throw error;
+      return (data ?? []) as unknown as Product[];
+    },
+  });
