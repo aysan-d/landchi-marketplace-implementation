@@ -2,7 +2,7 @@ const FA_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
 
 /** Converts latin digits inside any string to Persian digits. */
 export function toFa(value: string | number): string {
-  return String(value).replace(/\d/g, (d) => FA_DIGITS[Number(d)]);
+  return String(value).replace(/\d/g, (d) => FA_DIGITS[Number(d)] ?? d);
 }
 
 /** 1234567 -> "۱,۲۳۴,۵۶۷" */
