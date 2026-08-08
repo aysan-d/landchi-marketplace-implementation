@@ -26,13 +26,17 @@ jobs:
       - name: Build project
         run: bun run build
 
+      - name: Debug Output
+        run: ls -R
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          # اگر پوشه dist نبود، با توجه به خروجی Debug مرحله قبل این مسیر را اصلاح می‌کنیم
+          path: ./dist
 
   deploy:
     needs: build
