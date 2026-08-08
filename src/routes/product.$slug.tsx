@@ -97,7 +97,7 @@ function ProductPage() {
   if (!product) throw notFound();
 
   const variant = variants.find((v) => v.id === variantId) ?? null;
-  const base = product.price + (variant?.price_delta ?? 0);
+  const base = variant?.price ?? product.price;
   const price = finalPrice(base, product.discount_percent);
   const stock = variant ? variant.stock : product.stock;
   const outOfStock = stock <= 0;
@@ -107,7 +107,11 @@ function ProductPage() {
 
   function onAdd() {
     if (!product || outOfStock) return;
-    add(product, quantity, variant ? `${variant.name}: ${variant.value}` : undefined);
+    add(
+      product,
+      quantity,
+      variant ? `${variant.option_type}: ${variant.option_value}` : undefined,
+    );
     toast.success("محصول به سبد خرید اضافه شد");
   }
 
@@ -172,7 +176,7 @@ function ProductPage() {
 
             {variants.length > 0 && (
               <div className="mt-4">
-                <p className="mb-2 text-xs font-medium">انتخاب {variants[0]?.name}</p>
+                <p className="mb-2 text-xs font-medium">انتخاب {variants[0]?.option_type}</p>
                 <div className="flex flex-wrap gap-2">
                   {variants.map((v) => (
                     <button
@@ -184,13 +188,13 @@ function ProductPage() {
                         v.id === variantId ? "border-primary text-primary" : "border-border"
                       }`}
                     >
-                      {v.hex && (
+                      {v.option_hex && (
                         <span
                           className="size-3 rounded-full border border-border"
-                          style={{ backgroundColor: v.hex }}
+                          style={{ backgroundColor: v.option_hex }}
                         />
                       )}
-                      {v.value}
+                      {v.option_value}
                     </button>
                   ))}
                 </div>
@@ -356,8 +360,18 @@ function ProductPage() {
                       ))}
                     </div>
                     {r.title && <p className="mt-1.5 text-xs font-medium">{r.title}</p>}
-                    {r.body && (
-                      <p className="mt-1 text-[11px] leading-6 text-foreground/80">{r.body}</p>
+                    {r.comment && (
+                      <p className="mt-1 text-[11px] leading-6 text-foreground/80">{r.comment}</p>
+                    )}
+                    {(r.pros?.length || r.cons?.length) && (
+                      <ul className="mt-2 space-y-0.5 text-[10px]">
+                        {r.pros?.map((p) => (
+                          <li key={p} className="text-success">+ {p}</li>
+                        ))}
+                        {r.cons?.map((c) => (
+                          <li key={c} className="text-sale">- {c}</li>
+                        ))}
+                      </ul>
                     )}
                   </article>
                 ))}
