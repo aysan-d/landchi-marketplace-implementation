@@ -43,6 +43,6 @@ export function faDate(iso: string | Date): string {
     day: "numeric",
   }).formatToParts(date);
   const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
-  const month = FA_MONTHS[Math.max(0, get("month") - 1)];
+  const month = FA_MONTHS[Math.max(0, get("month") - 1)] ?? "";
   return `${toFa(get("day"))} ${month} ${toFa(get("year"))}`;
 }
