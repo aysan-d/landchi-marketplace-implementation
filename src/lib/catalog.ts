@@ -210,17 +210,20 @@ export const productsQuery = (filters: ProductFilters = {}) =>
 export type ProductImage = { id: string; url: string; alt: string | null; display_order: number };
 export type ProductVariant = {
   id: string;
-  name: string;
-  value: string;
-  price_delta: number;
+  option_type: string;
+  option_value: string;
+  option_hex: string | null;
+  price: number | null;
   stock: number;
-  hex: string | null;
+  display_order: number;
 };
 export type Review = {
   id: string;
   rating: number;
   title: string | null;
-  body: string | null;
+  comment: string | null;
+  pros: string[];
+  cons: string[];
   author_name: string | null;
   created_at: string;
 };
@@ -264,8 +267,9 @@ export const productVariantsQuery = (productId: string | undefined) =>
       if (!productId) return [];
       const { data, error } = await supabase
         .from("product_variants")
-        .select("id,name,value,price_delta,stock,hex")
-        .eq("product_id", productId);
+        .select("id,option_type,option_value,option_hex,price,stock,display_order")
+        .eq("product_id", productId)
+        .order("display_order");
       if (error) throw error;
       return (data ?? []) as ProductVariant[];
     },
@@ -279,9 +283,9 @@ export const reviewsQuery = (productId: string | undefined) =>
       if (!productId) return [];
       const { data, error } = await supabase
         .from("reviews")
-        .select("id,rating,title,body,author_name,created_at")
+        .select("id,rating,title,comment,pros,cons,author_name,created_at")
         .eq("product_id", productId)
-        .eq("is_approved", true)
+        .eq("status", "approved")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as Review[];
